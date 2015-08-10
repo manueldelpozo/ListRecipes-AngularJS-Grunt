@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html ng-app="recipeStore">
+	<head>
+		<meta http-equiv="Content-Language" content="en">
+		<meta charset="UTF-8">
+		<title>Recipe list</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<link rel="stylesheet" href="sass/style.css">
+		<!-- support HTML5 for IE8 -->
+	    <!--[if lt IE 9]>
+	      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+	      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+	    <![endif]-->
+	    <style type="text/css" media="screen">
+	    	
+
+	    </style>
+		<script type="text/javascript" src="js/angular.min.js" defer></script>
+		<script type="text/javascript" src="js/recipeStore.js" defer></script>
+
+	</head>
+	<body>
+
+	<header class="login-form">
+		<h1>Recipe List</h1>
+		<form name="form" role="form">
+		    <div class="form-group">
+		        <input type="email" name="username" id="username" class="form-control" placeholder="Your email here" required />
+		    </div>
+		    <div class="form-group">
+		        <input type="password" name="password" id="password" class="form-control" placeholder="Your password here" required />
+		    </div>
+		    <div class="form-actions">
+		        <button type="submit" class="btn btn-danger">Login</button>
+		    </div>
+		</form>
+	</header>
+
+	<div class="list-group" ng-controller="StoreController">
+    	<div class="list-group-item" ng-repeat="recipe in recipes">
+      		
+      		<h2 class="title">{{recipe.name}}</h2>
+      		<h4 class="title"><em>{{recipe.headline}}</em></h4>
+			
+			<section class="main-info" ng-init="urlimage=recipe.image" style="background: #888 url({{urlimage}}) no-repeat;">
+
+				<div class="content">
+					<div class="description">
+						<p>{{recipe.description}}</p>
+					</div>
+					<div class="country">
+						<p><strong>Country: </strong>{{recipe.country}}</p>
+					</div>
+					<div class="time">
+						<p><strong>Cooking Time: </strong> {{recipe.time | date}} min </p>
+					</div>
+					<div class="difficulty">
+						<p><strong>Difficulty: </strong> Level {{recipe.difficulty +1}} </p>
+					</div>
+
+					<div class="fav" ng-controller="FavController"> 
+				        <button ng-click="disableClick(1)" ng-init="fav=recipe.favorites" ng-style="favStyle">This is my favorite</button>
+				        <span>&#9733; <span>{{fav}}</span> Faves</span>
+				    </div>
+				    <div class="vote" ng-controller="VotingController">
+				    	<div class="stars">
+				    		<span class="star" ng-click="voting(1);starStyle1={color:'red'};" ng-style="starStyle1">&#9733;</span>
+				    		<span class="star" ng-click="voting(2);starStyle2={color:'red'};starStyle1={color:'red'};" ng-style="starStyle2">&#9733;</span>
+				    		<span class="star" ng-click="voting(3);starStyle3={color:'red'};starStyle2={color:'red'};starStyle1={color:'red'};" ng-style="starStyle3">&#9733;</span>
+				    		<span class="star" ng-click="voting(4);starStyle4={color:'red'};starStyle3={color:'red'};starStyle2={color:'red'};starStyle1={color:'red'};" ng-style="starStyle4">&#9733;</span>
+				    		<span class="star" ng-click="voting(5);starStyle5={color:'red'};starStyle4={color:'red'};starStyle3={color:'red'};starStyle2={color:'red'};starStyle1={color:'red'}" ng-style="starStyle5">&#9733;</span>
+			    		</div>
+			    		<span class="rating" ng-init="rating=recipe.rating; ratings=recipe.ratings">
+							<strong>Rating: </strong> {{rating}} 
+						</span>
+		    		</div>
+				</div>
+
+			</section>
+
+	      	<section class="tab" ng-controller="TabController as tab">
+	      		<nav>
+	      			<ul class="nav nav-pills">
+			          	<li ng-class="{ active: tab.isSet(1) }"><a href ng-click="tab.setTab(1)">Ingredients</a></li>
+			          	<li ng-class="{ active: tab.isSet(2) }"><a href ng-click="tab.setTab(2)">Nutritional Info</a></li>
+			         	<li ng-class="{ active: tab.isSet(3) }"><a href ng-click="tab.setTab(3)">User</a></li>
+			        </ul>
+	      		</nav>
+		        <div class="tab-content">
+			        <div ng-show="tab.isSet(1)">
+			          	<div class='ingredients' ng-show="recipe.ingredients.length">
+							<ul class="list-ingredients">
+								<li class="thumbnail" ng-repeat="ingredient in recipe.ingredients">{{ingredient}}</li>
+							</ul>
+						</div>
+						<div class="undeliverable" ng-show="recipe.undeliverable_ingredients.length">
+							<h4>Undeliverable Ingredients</h4>
+							<ul class="list-undeliverable_ingredients">
+								<li class="thumbnail" ng-repeat="undeliverable_ingredient in recipe.undeliverable_ingredients">{{undeliverable_ingredient}}</li>
+							</ul>
+						</div>
+			        </div>
+			        <div ng-show="tab.isSet(2)">
+			          	<table class="nutritional-info">
+			          		<tr>
+			          			<td><strong>Calories</strong></td> 
+			          			<td>{{recipe.calories}}</td>
+		          			</tr>
+		          			<tr>
+			              		<td><strong>Fats</strong></td> 
+			              		<td>{{recipe.fats}}</td>
+		              		</tr>
+		              		<tr>
+			              		<td><strong>Proteins</strong></td> 
+			              		<td>{{recipe.proteins}}</td>
+		              		</tr>
+		              		<tr>
+		              			<td><strong>Carbohydrates</strong></td>
+		              			<td>{{recipe.carbos}}</td>
+	              			</tr>
+			          	</table>
+			        </div>
+			        <div ng-show="tab.isSet(3)"> 
+				        <div class="user">
+			          		<h3>{{recipe.user.name}}</h3>
+			              	<h4><a href="mailto:{{recipe.user.email}}?subject=feedback" "email me">Feed me back</a></h4>
+			              	<h4><a href="http://maps.google.com/?ie=UTF8&hq=&ll={{recipe.user.latlng}}&z=13">Find me</a></h4>
+				        </div>
+			        </div> 
+		        </div>
+	      	</section>	
+
+	    </div>
+	</div>
+    </body>    
+</html>                                		
